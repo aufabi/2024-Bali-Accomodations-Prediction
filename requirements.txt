@@ -1,3 +1,1 @@
 joblib
-os
-requests
