@@ -1,12 +1,20 @@
 import streamlit as st
 import joblib
 import numpy as np
+import os
+import requests
 
 # Load the trained model
-model = joblib.load("https://github.com/aufabi/2024-Bali-Accomodations-Prediction/blob/main/linear_regression_model.pkl")
+model_url = "https://raw.githubusercontent.com/your-username/your-repo/main/linear_regression_model.pkl"
+model_path = "linear_regression_model.pkl"
+if not os.path.exists(model_path):
+    response = requests.get(model_url)
+    with open(model_path, "wb") as f:
+        f.write(response.content)
+model = joblib.load(model_path)
 
 # Streamlit UI
-st.title("Real Estate Price Prediction App")
+st.title("Accomodation Price Prediction App")
 
 st.write("Enter the property details below:")
 
