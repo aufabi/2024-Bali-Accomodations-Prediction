@@ -3,7 +3,7 @@ import joblib
 import numpy as np
 
 # Load the trained model
-model = joblib.load("linear_regression_model.pkl")
+model = joblib.load("https://github.com/aufabi/2024-Bali-Accomodations-Prediction/blob/main/linear_regression_model.pkl")
 
 # Streamlit UI
 st.title("Real Estate Price Prediction App")
