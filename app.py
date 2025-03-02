@@ -14,17 +14,8 @@ if not os.path.exists(model_path):
         f.write(response.content)
 model = joblib.load(model_path)
 
-# Load the scaler
-scaler_url = "https://raw.githubusercontent.com/aufabi/2024-Bali-Accomodations-Prediction/main/scaler.pkl"
-scaler_path = "scaler.pkl"
-if not os.path.exists(scaler_path):
-    response = requests.get(scaler_url)
-    with open(scaler_path, "wb") as f:
-        f.write(response.content)
-scaler = joblib.load(scaler_path)
-
-# List of possible locations (from your one-hot encoding)
-location_options = np.array(['Nusa Dua Beach', 'Seminyak', 'Kuta', 'Denpasar Selatan', 'Tuban',
+# Define all possible locations (from training data)
+locations = ['Nusa Dua Beach', 'Seminyak', 'Kuta', 'Denpasar Selatan', 'Tuban',
        'Legian', 'Denpasar Utara', 'Denpasar Barat', 'Sanur', 'Canggu',
        'Nusa Dua', 'Ubud', 'Jimbaran', 'Pecatu', 'Kintamani', 'Klungkung',
        'Denpasar Timur', 'Ketewel', 'Monkey Forest', 'Singaraja',
@@ -47,25 +38,23 @@ location_options = np.array(['Nusa Dua Beach', 'Seminyak', 'Kuta', 'Denpasar Sel
        'Tembuku', 'Pupuan', 'Karangasem', 'Kubutambahan', 'Pemogan - AT',
        'Mambal', 'Busung Biu', 'Medewi', 'Manggis', 'Tirta Gangga',
        'Balian', 'Belimbing', 'Sesetan - AT', 'Kerta', 'Bali', 'Uluwatu',
-       'Jayagiri', 'Susut', 'Badung', 'Celuk'])
+       'Jayagiri', 'Susut', 'Badung', 'Celuk']
 
 # Streamlit UI
 st.title("Accommodation Price Prediction App")
-st.write("Enter the accommodation details below:")
 
-# User Inputs
-travel_points = st.number_input("Travel Points", min_value=0.0, max_value=5.0, step=0.1)
-stars = st.number_input("Stars", min_value=0.0, max_value=5.0, step=0.1)
-users = st.number_input("Number of Users", min_value=1, step=1)
-num_of_features = st.number_input("Number of Features", min_value=1, step=1)
+st.write("Enter the property details below:")
 
-# Dropdown for location
-selected_location = st.selectbox("Select Location", location_options)
+# Numerical Inputs
+travel_points = st.number_input("Travel Points (0-5)", min_value=0.0, max_value=5.0, step=0.1)
+stars = st.number_input("Stars (0-5)", min_value=0.0, max_value=5.0, step=0.1)
+users = st.number_input("Number of Users", min_value=0, step=1)
+num_of_features = st.number_input("Number of Features", min_value=0, step=1)
 
-# One-hot encode the location
-location_encoded = [1 if loc == selected_location else 0 for loc in location_options]
+# Location Dropdown
+selected_location = st.selectbox("Select Location", locations)
 
-# Binary features
+# Binary Features (Checkboxes)
 binary_features = {
     "beach": st.checkbox("Beach"),
     "bar": st.checkbox("Bar"),
@@ -78,20 +67,30 @@ binary_features = {
     "fitness": st.checkbox("Fitness"),
     "spa": st.checkbox("Spa"),
     "inclusive": st.checkbox("Inclusive"),
-    "billyard": st.checkbox("Billyard"),
+    "billyard": st.checkbox("Billiard"),
     "swimming_pool": st.checkbox("Swimming Pool"),
     "kitchen": st.checkbox("Kitchen"),
     "fishing": st.checkbox("Fishing")
 }
 
-# Convert binary features to 0 or 1
-binary_values = [1 if binary_features[key] else 0 for key in binary_features]
+# Create one-hot encoded location features
+location_features = {loc: 1 if loc == selected_location else 0 for loc in locations}
 
-# Combine all inputs
-input_data = np.array([[travel_points, stars, users, num_of_features] + binary_values + location_encoded])
+# Combine all features into a single input array
+feature_values = [travel_points, stars, users, num_of_features] + \
+                 list(binary_features.values()) + list(location_features.values())
 
-# Scale the input data
-scaled_input = scaler.transform(input_data)
+# Load StandardScaler
+scaler_url = "https://raw.githubusercontent.com/aufabi/2024-Bali-Accomodations-Prediction/main/scaler.pkl"
+scaler_path = "scaler.pkl"
+if not os.path.exists(scaler_path):
+    response = requests.get(scaler_url)
+    with open(scaler_path, "wb") as f:
+        f.write(response.content)
+scaler = joblib.load(scaler_path)
+
+# Apply StandardScaler
+scaled_input = scaler.transform([feature_values])
 
 # Make Prediction
 if st.button("Predict Price"):
