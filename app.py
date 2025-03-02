@@ -60,4 +60,4 @@ if st.button("Predict Price"):
     input_data = np.array([[travel_points, stars, users, num_of_features] + feature_values])
     input_scaled = scaler.transform(input_data)  # Apply standard scaling
     prediction = model.predict(input_scaled)
-    st.write(f"Estimated Price: $ {prediction[0]:,.2f}")
+    st.write(f"Estimated Price: Rp {prediction[0]:,.2f}")
