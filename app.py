@@ -57,9 +57,9 @@ feature_values = [1 if features[key] else 0 for key in features]
 
 # Make Prediction
 if st.button("Predict Price"):
-    input_data_numeric = np.array([[travel_points, stars, users, num_of_features]])
+    input_data_numeric = np.array([travel_points, stars, users, num_of_features])
     input_scaled = scaler.transform(input_data_numeric)
-    feature_values = np.array([feature_values])
+    feature_values = np.array(feature_values)
 
     input_data = np.array([np.hstack([input_scaled, feature_values])])
     prediction = model.predict(input_scaled)
