@@ -28,7 +28,7 @@ st.title("Accommodation Price Prediction App")
 st.write("Enter the property details below:")
 
 # User Inputs
-travel_points = st.number_input("Travel Points", min_value=0.0, max_value=5.0, step=0.1)
+travel_points = st.number_input("Travel Points", min_value=0.0, max_value=10.0, step=0.1)
 stars = st.number_input("Stars", min_value=0.0, max_value=5.0, step=0.1)
 users = st.number_input("Users", min_value=0, step=1)
 num_of_features = st.number_input("Number of Features", min_value=0, step=1)
