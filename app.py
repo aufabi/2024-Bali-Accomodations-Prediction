@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 import os
 import requests
+import pandas
 
 # Load the trained model
 model_url = "https://raw.githubusercontent.com/aufabi/2024-Bali-Accomodations-Prediction/main/xgb_model.pkl"
