@@ -34,7 +34,7 @@ users = st.number_input("Users", min_value=0, step=1)
 num_of_features = st.number_input("Number of Features", min_value=0, step=1)
 
 numerical_features = ['travel_points', 'stars', 'users', 'num_of_features']
-one_hot_columns = ['beach', 'bar', 'massage', 'child_care',	'restaurant_show', 'bike_rent', 'car_rent',	
+one_hot_columns = ['beach', 'bar', 'massage', 'child_care', 'restaurant_show', 'bike_rent', 'car_rent',	
                    'rooftop', 'fitness', 'spa', 'inclusive', 'billyard', 'swimming_pool', 'kitchen', 'fishing']
 feature_values = [st.checkbox(f) for f in one_hot_columns]
 
