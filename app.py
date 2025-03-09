@@ -59,6 +59,6 @@ feature_values = [1 if features[key] else 0 for key in features]
 if st.button("Predict Price"):
     input_data_numeric = np.array([[travel_points, stars, users, num_of_features]])
     input_scaled = scaler.transform(input_data_numeric)
-    input_data = np.array([input_scaled + feature_values])
+    input_data = np.array([[input_scaled + feature_values]])
     prediction = model.predict(input_scaled)
     st.write(f"Estimated Price: Rp {prediction[0]:,.2f}")
