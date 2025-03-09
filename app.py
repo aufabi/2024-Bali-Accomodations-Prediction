@@ -5,8 +5,8 @@ import os
 import requests
 
 # Load the trained model
-model_url = "https://raw.githubusercontent.com/aufabi/2024-Bali-Accomodations-Prediction/main/random_forest_model.pkl"
-model_path = "random_forest_model.pkl"
+model_url = "https://raw.githubusercontent.com/aufabi/2024-Bali-Accomodations-Prediction/main/xgb_model.pkl"
+model_path = "xgb_model.pkl"
 if not os.path.exists(model_path):
     response = requests.get(model_url)
     with open(model_path, "wb") as f:
@@ -30,8 +30,8 @@ st.write("Enter the property details below:")
 # User Inputs
 travel_points = st.number_input("Travel Points", min_value=0.0, max_value=5.0, step=0.1)
 stars = st.number_input("Stars", min_value=0.0, max_value=5.0, step=0.1)
-users = st.number_input("Users", min_value=1, step=1)
-num_of_features = st.number_input("Number of Features", min_value=1, step=1)
+users = st.number_input("Users", min_value=0, step=1)
+num_of_features = st.number_input("Number of Features", min_value=0, step=1)
 
 # Binary features (0 or 1)
 features = {
