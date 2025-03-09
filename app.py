@@ -46,21 +46,25 @@ input_data = pd.DataFrame([[travel_points, stars, users, num_of_features] + feat
                           columns=numerical_features + one_hot_columns)
 
 if st.button("Predict Price"):
-    # Separate numerical and categorical data
-    numerical_data = input_data[numerical_features].astype(float)  # Ensure numerical values
-    categorical_data = input_data[one_hot_columns]  # Keep categorical as is (0/1)
+    # Pisahkan fitur numerik dan kategorikal
+    numerical_data = input_data[numerical_features].astype(float)  # Pastikan numerik
+    categorical_data = input_data[one_hot_columns]  # One-hot tetap 0/1
 
-    # Scale only numerical data
-    numerical_scaled = scaler.transform(numerical_data.values.reshape(1, -1))  # Reshape to match scaler's expected input
+    # Scale hanya fitur numerik
+    numerical_scaled = scaler.transform(numerical_data.values.reshape(1, -1))
     numerical_scaled_df = pd.DataFrame(numerical_scaled, columns=numerical_features)
 
-    # Combine scaled numerical data with categorical data
+    # Gabungkan fitur numerik yang sudah di-scale dengan fitur kategorikal
     input_scaled = pd.concat([numerical_scaled_df, categorical_data], axis=1)
 
-    # Ensure final input matches the model's expected feature count
+    # **🔹 Pastikan fitur sesuai dengan urutan model**
+    expected_features = model.feature_names_in_  # Fitur yang diharapkan model
+    input_scaled = input_scaled[expected_features]  # Urutkan sesuai dengan model
+
+    # **🔹 Cek apakah jumlah fitur sesuai**
     if input_scaled.shape[1] != model.n_features_in_:
         st.error(f"Feature mismatch: Expected {model.n_features_in_}, but got {input_scaled.shape[1]}")
     else:
-        # Predict the price
+        # **🔹 Prediksi harga**
         prediction = model.predict(input_scaled)
         st.write(f"Estimated Price: Rp {prediction[0]:,.2f}")
