@@ -60,11 +60,13 @@ numerical_features = ['travel_points', 'stars', 'users', 'num_of_features']
 one_hot_columns = ['beach', 'bar', 'massage', 'child_care',	'restaurant_show', 'bike_rent', 'car_rent',	
                    'rooftop', 'fitness', 'spa', 'inclusive', 'billyard', 'swimming_pool', 'kitchen', 'fishing']
 
-input_df = pd.DataFrame([[travel_points, stars, users, num_of_features] + feature_values], 
+X_test = pd.DataFrame([[travel_points, stars, users, num_of_features] + feature_values], 
                           columns=numerical_features + one_hot_columns)
+X_test_scaled = X_test.copy()
 
 # Make Prediction
 if st.button("Predict Price"):
-    input_df[numerical_features] = scaler.transform(input_df[numerical_features])  # Apply standard scaling
+    X_test_scaled[numerical_features] = scaler.transform(X_test[numerical_features])
+    input_df = pd.DataFrame(X_test_scaled, columns=X_test.columns, index=X_test.index)
     prediction = model.predict(input_df)
     st.write(f"Estimated Price: Rp {prediction[0]:,.2f}")
