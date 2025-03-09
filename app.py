@@ -1,6 +1,7 @@
 import streamlit as st
 import joblib
 import numpy as np
+import pandas as pd
 import os
 import requests
 
@@ -24,7 +25,6 @@ scaler = joblib.load(scaler_path)
 
 # Streamlit UI
 st.title("Accommodation Price Prediction App")
-
 st.write("Enter the property details below:")
 
 # User Inputs
@@ -33,34 +33,34 @@ stars = st.number_input("Stars", min_value=0.0, max_value=5.0, step=0.1)
 users = st.number_input("Users", min_value=0, step=1)
 num_of_features = st.number_input("Number of Features", min_value=0, step=1)
 
-# Binary features (0 or 1)
-features = {
-    "Beach": st.checkbox("Beach"),
-    "Bar": st.checkbox("Bar"),
-    "Massage": st.checkbox("Massage"),
-    "Child Care": st.checkbox("Child Care"),
-    "Restaurant Show": st.checkbox("Restaurant Show"),
-    "Bike Rent": st.checkbox("Bike Rent"),
-    "Car Rent": st.checkbox("Car Rent"),
-    "Rooftop": st.checkbox("Rooftop"),
-    "Fitness": st.checkbox("Fitness"),
-    "Spa": st.checkbox("Spa"),
-    "Inclusive": st.checkbox("Inclusive"),
-    "Billyard": st.checkbox("Billyard"),
-    "Swimming Pool": st.checkbox("Swimming Pool"),
-    "Kitchen": st.checkbox("Kitchen"),
-    "Fishing": st.checkbox("Fishing"),
-}
+# Feature Lists
+numerical_features = ['travel_points', 'stars', 'users', 'num_of_features']
+one_hot_columns = ['beach', 'bar', 'massage', 'child_care', 'restaurant_show', 'bike_rent', 'car_rent', 
+                   'rooftop', 'fitness', 'spa', 'inclusive', 'billyard', 'swimming_pool', 'kitchen', 'fishing']
 
-# Convert checkboxes to 0 or 1
-feature_values = [1 if features[key] else 0 for key in features]
+# Collect feature values from user
+feature_values = [int(st.checkbox(f)) for f in one_hot_columns]  # Convert checkbox to 0/1
 
-# Make Prediction
+# Create input dataframe
+input_data = pd.DataFrame([[travel_points, stars, users, num_of_features] + feature_values], 
+                          columns=numerical_features + one_hot_columns)
+
 if st.button("Predict Price"):
-    input_data_numeric = np.array([travel_points, stars, users, num_of_features])
-    input_scaled = scaler.transform(input_data_numeric)
-    feature_values = np.array(feature_values)
+    # Separate numerical and categorical data
+    numerical_data = input_data[numerical_features].astype(float)  # Ensure numerical values
+    categorical_data = input_data[one_hot_columns]  # Keep categorical as is (0/1)
 
-    input_data = np.array([np.hstack([input_scaled, feature_values])])
-    prediction = model.predict(input_scaled)
-    st.write(f"Estimated Price: Rp {prediction[0]:,.2f}")
+    # Scale only numerical data
+    numerical_scaled = scaler.transform(numerical_data.values.reshape(1, -1))  # Reshape to match scaler's expected input
+    numerical_scaled_df = pd.DataFrame(numerical_scaled, columns=numerical_features)
+
+    # Combine scaled numerical data with categorical data
+    input_scaled = pd.concat([numerical_scaled_df, categorical_data], axis=1)
+
+    # Ensure final input matches the model's expected feature count
+    if input_scaled.shape[1] != model.n_features_in_:
+        st.error(f"Feature mismatch: Expected {model.n_features_in_}, but got {input_scaled.shape[1]}")
+    else:
+        # Predict the price
+        prediction = model.predict(input_scaled)
+        st.write(f"Estimated Price: Rp {prediction[0]:,.2f}")
