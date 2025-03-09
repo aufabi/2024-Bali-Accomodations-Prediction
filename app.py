@@ -29,7 +29,7 @@ st.title("Accommodation Price Prediction App")
 st.write("Enter the property details below:")
 
 # User Inputs
-travel_points = st.number_input("Travel Points", min_value=0.0, max_value=10.0, step=0.1)
+trave_points = st.number_input("Traveloka Points", min_value=0.0, max_value=10.0, step=0.1)
 stars = st.number_input("Stars", min_value=0.0, max_value=5.0, step=0.1)
 users = st.number_input("Users", min_value=0, step=1)
 num_of_features = st.number_input("Number of Features", min_value=0, step=1)
@@ -56,11 +56,11 @@ features = {
 # Convert checkboxes to 0 or 1
 feature_values = [1 if features[key] else 0 for key in features]
 
-numerical_features = ['travel_points', 'stars', 'users', 'num_of_features']
+numerical_features = ['trave_points', 'stars', 'users', 'num_of_features']
 one_hot_columns = ['beach', 'bar', 'massage', 'child_care',	'restaurant_show', 'bike_rent', 'car_rent',	
                    'rooftop', 'fitness', 'spa', 'inclusive', 'billyard', 'swimming_pool', 'kitchen', 'fishing']
 
-X_test = pd.DataFrame([[travel_points, stars, users, num_of_features] + feature_values], 
+X_test = pd.DataFrame([[trave_points, stars, users, num_of_features] + feature_values], 
                           columns=numerical_features + one_hot_columns)
 X_test_scaled = X_test.copy()
 
