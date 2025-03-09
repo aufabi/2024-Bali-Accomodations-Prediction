@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 import os
 import requests
+import pandas as pd
 
 # Load the trained model
 model_url = "https://raw.githubusercontent.com/aufabi/2024-Bali-Accomodations-Prediction/main/xgb_model.pkl"
@@ -55,9 +56,17 @@ features = {
 # Convert checkboxes to 0 or 1
 feature_values = [1 if features[key] else 0 for key in features]
 
+numerical_features = ['travel_points', 'stars', 'users', 'num_of_features']
+one_hot_columns = ['beach', 'bar', 'massage', 'child_care',	'restaurant_show', 'bike_rent', 'car_rent',	
+                   'rooftop', 'fitness', 'spa', 'inclusive', 'billyard', 'swimming_pool', 'kitchen', 'fishing']
+
+X_test = pd.DataFrame([[travel_points, stars, users, num_of_features] + feature_values], 
+                          columns=numerical_features + one_hot_columns)
+X_test_scaled = X_test.copy()
+
 # Make Prediction
 if st.button("Predict Price"):
-    input_data = np.array([[travel_points, stars, users, num_of_features] + feature_values])
-    input_scaled = scaler.transform(input_data)  # Apply standard scaling
-    prediction = model.predict(input_scaled)
+    X_test_scaled[numerical_features] = scaler.transform(X_test[numerical_features])
+    X_test = pd.DataFrame(X_test_scaled, columns=X_test.columns, index=X_test.index)
+    prediction = model.predict(X_test)
     st.write(f"Estimated Price: Rp {prediction[0]:,.2f}")
